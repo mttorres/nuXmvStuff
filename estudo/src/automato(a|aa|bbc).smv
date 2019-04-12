@@ -1,0 +1,24 @@
+MODULE main
+
+VAR
+	state : {q0,q1,q2,qf};
+	char : {a,b,c};
+	
+--automato que considera a linguagem l = POSSUI aa ou bb como subpalavra e  um C necessariamente apos essa subpalavra 
+
+ASSIGN 
+	init(state) := q0;
+	next(state) := case
+					char = a & state = q0 : {q0,q1};
+					char = b & state = q0 : {q0,q2};
+					char = a & state = q1 : {qf};
+					char = b & state = q2 : {qf};
+					char = c & state = qf : {q0};
+					char = c & state = qf : {q0};
+				esac;
+
+DEFINE
+	out1 := char;   
+	out2 := state; 
+	--out1 := {} + char;   
+	--out2 := {} + state;
