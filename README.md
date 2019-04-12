@@ -1,0 +1,2 @@
+# nuXmvStuff
+nuXmv modelchecking
