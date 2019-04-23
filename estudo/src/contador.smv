@@ -1,0 +1,25 @@
+MODULE main
+
+VAR
+	b0 : boolean;
+	b1 : boolean;
+	out: 0..3;
+
+
+ASSIGN 
+	init(b0) := FALSE;
+	next(b0) := !b0;
+
+	init(b1) := FALSE; -- a diferença é que com isso somos obrigados a começar em FALSE , FALSE só isso (o model chekcer ainda explora as possibilidades
+							-- de b1 , enquanto ele sozinho alterna b0) 
+
+	next(b1) := ((!b0 & b1) | (b0 & !b1) );  -- b1 vai ser : no inicio quando ambos forem falsos,    false
+												
+											-- após isso b0 vai ser true,  fazendo b1 ser true também e depois disso invertendo b0 (b1 fica true quando b0 assume um valor diferente dele!, fazendo o & ficar true)
+
+											-- ou seja! o estados são já predefinidos! contados! ->> 00, 01(são diferentes posso "ativar b1"), 10, 11(são diferentes posso "ativar b1", nesse caso já esta ativo!)
+
+
+
+
+	out := toint(b0) + 2*toint(b1);   

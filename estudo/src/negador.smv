@@ -1,0 +1,17 @@
+MODULE main
+
+VAR
+	b0 : boolean;
+	b1 : boolean;
+
+
+ASSIGN 
+	init(b0) := FALSE;
+	next(b0) := !b0;
+
+	init(b1) := FALSE; -- a diferença é que com isso somos obrigados a começar em FALSE , FALSE só isso (o model chekcer ainda explora as possibilidades
+							-- de b1 , enquanto ele sozinho alterna b0) 
+
+
+
+
