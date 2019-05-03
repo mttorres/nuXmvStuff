@@ -1,0 +1,35 @@
+MODULE main
+VAR
+    fifo : fifo(time);
+    time : 0..3;
+CTLSPEC  !EF((fifo.cs = p1 & time = 1));
+ASSIGN 
+    init(time) := 0;
+    next(time) := case
+        time < 3: time + 1;
+        TRUE     : time;
+    esac;
+    
+MODULE fifo(time)
+VAR
+    cs : {q1,p1};    
+    ports: portsModule;
+ASSIGN
+    init(cs) := {q1};
+TRANS
+    (((cs = q1) & (ports.c[time] = NULL) & (ports.a[time] = 0)) -> next(cs) = p1) &
+    (((cs = p1) & (ports.a[time] = NULL) & (ports.c[time] = 0)) -> next(cs) = q1);
+
+MODULE portsModule
+FROZENVAR
+    a : array 0..3 of {NULL,0};
+    c : array 0..3 of {NULL,0};
+ASSIGN 
+    init(a[0]) := 0;
+    init(a[1]) := NULL;
+    init(a[2]) := 0;
+    init(a[3]) := NULL;
+    init(c[0]) := NULL;
+    init(c[1]) := 0;
+    init(c[2]) := NULL;
+    init(c[3]) := 0;
