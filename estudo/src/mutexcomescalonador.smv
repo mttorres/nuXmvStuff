@@ -1,0 +1,48 @@
+--MUTEX com escalonamento
+
+MODULE user(semaforo)
+	VAR
+		state : {idle,entering,critical,exiting};
+		escalonador: 0..4;
+	ASSIGN
+		init(escalonador) := 0;
+		init(state):= idle;
+		next(state):=
+			case
+				state = idle: {idle,entering}; -- pode ficar ainda ocioso
+				state = entering & !semaforo : critical; -- semaforo = falso (tem permissao para acessar a zona critica)
+				state = critical & escalonador != 4 : {critical, exiting}; -- pode ficar ainda usando a zona critica (starvation do outro processo ?)
+				state = critical & escalonador = 4 : {exiting}; --tentativa modificar isso para nao ter starvation
+				state = exiting : idle;
+				TRUE : state;
+
+			esac;
+
+
+		next(escalonador):=
+			case
+				escalonador != 4 & state = critical : escalonador+1;
+				TRUE : 0;
+			esac;
+		-- aloca e desaloca o semaforo
+		next(semaforo):=
+			case
+				state = entering : TRUE;
+				state = exiting : FALSE;
+				TRUE : FALSE;
+			esac;
+
+MODULE main()
+
+	VAR 
+		semaforo : boolean;
+		--proc1 : process user(semaforo);                 
+		--proc2: process user(semaforo);
+		proc1 : user(semaforo);                 
+		proc2: user(semaforo);
+		-- a keyword process é usada para modelar concorrencia, um modulo instanciado com essa keyword é executado "um passo" de forma não deterministica
+		-- e então executa todos os assigns daquele proceso em paralelo, cada processo tem uma variavel especial  "rodando", se rodando = 1 essa instancia foi escolhida
+		-- um processo só roda se o seu pai está rodando e pode rodar em paralelo com seu "irmão"
+		-- porem note que process foi depreciado! 
+	ASSIGN
+		init(semaforo) := FALSE;

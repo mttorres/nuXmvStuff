@@ -1,0 +1,44 @@
+-- Greatest Common Divisor Program counter
+--void main() {
+--... // initialization of a and b
+--l1: while (a!=b) {
+--l2: 	if (a>b)
+--l3: 		a=a-b;
+--		else
+--l4: 		b=b-a;
+--		}
+--l5: ... // GCD=a=b
+--}
+MODULE main()
+	VAR a: 0..100; b: 0..100;
+	pc: {l1,l2,l3,l4,l5};
+
+	ASSIGN
+		--init(a) := 15;
+		--init(b) := 14;
+		init(pc) := l1;
+		next(pc) :=
+			case
+				pc=l1 & a!=b: l2; -- vai para a linha l2 do program counter se a != b e estamos "fora do loop"
+				pc=l1 &a=b : l5;   -- vai para o resultado (l5) a e b são iguais logo o maior divisor é ele mesmo
+				pc=l2 &a>b: l3;   -- se a é maior que b vai para l3 em que subtrai o a(veja mais abaixo)
+				pc=l2 &a<=b: l4;   -- else
+				pc=l3 | pc=l4: l1; -- fez a operação l3 ou l4 (volta para l1 (while))
+				pc=l5: l5;		   -- final do programa (resultado)   
+
+			esac;
+		next(a):=
+			case
+				pc=l3: a-b;
+				TRUE: a;
+			esac;
+		next(b):=
+			case	
+				pc=l4: b-a;
+				TRUE: b;
+			esac;
+		
+
+	DEFINE
+		out1:= a;
+		out2:= b;
