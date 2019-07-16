@@ -30,6 +30,8 @@ MODULE user(semaforo)
 		state = entering -> next(semaforo) = TRUE;
 	TRANS
 		state = exiting -> next(semaforo) = FALSE;
+
+	--usando trans nesse caso ocorre double assign 
 		--next(semaforo):=
 		--	case
 		--		state = entering : TRUE;
