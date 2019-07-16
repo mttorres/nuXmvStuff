@@ -51,3 +51,8 @@ MODULE main()
 		-- porem note que process foi depreciado! 
 	ASSIGN
 		init(semaforo) := FALSE;
+
+	--TRANS
+	--	state = proc1.entering | proc2.entering -> next(semaforo) = TRUE;
+	--TRANS
+	--	state = proc1.exiting | proc2.exiting -> next(semaforo) = FALSE;
