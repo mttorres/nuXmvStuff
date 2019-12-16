@@ -1,35 +1,35 @@
 MODULE main
 VAR
-    fifo : fifo(time);
-    time : 0..3;
-CTLSPEC  !EF((fifo.cs = p1 & time = 1));
+    fifo : fifo(time); -- o modulo fila
+    time : 0..3;   -- um intervalo de tempo
+CTLSPEC  !EF((fifo.cs = q1 & time = 1));
 ASSIGN 
-    init(time) := 0;
-    next(time) := case
+    init(time) := 0;  -- tempo inicia com 0
+    next(time) := case    -- tempo incrementa enquanto for menor que 3
         time < 3: time + 1;
         TRUE     : time;
     esac;
     
 MODULE fifo(time)
 VAR
-    cs : {q1,p1};    
-    ports: portsModule;
+    cs : {q1,p1};    -- os estados possiveis
+    ports: portsModule;  -- o modulo de portas
 ASSIGN
-    init(cs) := {q1};
+    init(cs) := {q1}; -- inicia sempre no estado q1 e transita se possuir 0(dado) na outra porta
 TRANS
-    (((cs = q1) & (ports.c[time] = NULL) & (ports.a[time] = 0)) -> next(cs) = p1) &
-    (((cs = p1) & (ports.a[time] = NULL) & (ports.c[time] = 0)) -> next(cs) = q1);
+    (((cs = q1) & (ports.b[time] = NULL) & (ports.a[time] = 0)) -> next(cs) = p1) &
+    (((cs = p1) & (ports.a[time] = NULL) & (ports.b[time] = 0)) -> next(cs) = q1);
 
 MODULE portsModule
 FROZENVAR
     a : array 0..3 of {NULL,0};
-    c : array 0..3 of {NULL,0};
+    b : array 0..3 of {NULL,0};
 ASSIGN 
     init(a[0]) := 0;
     init(a[1]) := NULL;
     init(a[2]) := 0;
     init(a[3]) := NULL;
-    init(c[0]) := NULL;
-    init(c[1]) := 0;
-    init(c[2]) := NULL;
-    init(c[3]) := 0;
+    init(b[0]) := NULL;
+    init(b[1]) := 0;
+    init(b[2]) := NULL;
+    init(b[3]) := 0;

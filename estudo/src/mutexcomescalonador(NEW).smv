@@ -1,0 +1,45 @@
+--MUTEX com escalonamento
+
+MODULE user(semaforo)
+	VAR
+		state : {idle,entering,critical,exiting};
+		escalonador: 0..4;
+	ASSIGN
+		init(escalonador) := 0;
+		init(state):= idle;
+		next(state):=
+			case
+				state = idle: {idle,entering}; -- pode ficar ainda ocioso
+				state = entering & semaforo : critical; -- semaforo = falso (tem permissao para acessar a zona critica)
+				state = critical & escalonador != 4 : {critical, exiting}; -- pode ficar ainda usando a zona critica (possivel starvation do outro processo)
+				state = critical & escalonador = 4 : {exiting}; --tentativa modificar isso para nao ter starvation
+				state = exiting : idle;
+				TRUE : state;
+
+			esac;
+
+
+		next(escalonador):=
+			case
+				escalonador != 4 & state = critical : escalonador+1;
+				TRUE : 0;
+			esac;
+
+	-- aloca e desaloca o semaforo		
+	TRANS
+		state = entering -> next(semaforo) = TRUE;
+	TRANS
+		state = exiting -> next(semaforo) = FALSE;
+
+
+MODULE main()
+
+	VAR 
+		semaforo : boolean;
+		proc1 : user(semaforo);                 
+		proc2: user(semaforo);
+		
+	ASSIGN
+		init(semaforo) := FALSE;
+
+	
